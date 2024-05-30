@@ -10,7 +10,11 @@ flagCount = 0
 
 # generate the board
 def generate_board():
+    global printedBoard
+    global board
     global blankSpots
+    printedBoard = []
+    board = []
     for x in range(0,8,1):
         printedLine = []
         line = []
@@ -67,49 +71,46 @@ def update_printedBoard(xPos, yPos):
                     update_printedBoard(row, column)
     return True
 
-Graphics.initialise(10,8,10)
+#Graphics.initialise(10,8,10)
 
-print("Minesweeper")
-generate_board()
-button = 3
-while button != 1:
-    startingX, startingY, button = Graphics.user_input(printedBoard)
-    if button == 3:
-        if printedBoard[startingY][startingX] == ".":
-            printedBoard[startingY][startingX] = "F"  
-        elif printedBoard[startingY][startingX] == "F":
-            printedBoard[startingY][startingX] = "."
-    if (printedBoard[startingY][startingX] == "F"):
-        button = 3
-    Graphics.update(printedBoard, 10)
-for row in range(0, len(printedBoard), 1):
-    for column in range(0, len(printedBoard[row]), 1):
-        printedBoard[row][column] = "."
-place_mines(startingY, startingX)
-print_board(board)
-update_printedBoard(startingY, startingX)
-ended = False
-while not ended:
-    Graphics.update(printedBoard, 10)
+gameOpen = True
+while gameOpen:
+    Graphics.initialise(10,8,10)
+    generate_board()
     button = 3
     while button != 1:
-        playerX, playerY, button = Graphics.user_input(printedBoard)
+        startingX, startingY, button = Graphics.user_input(printedBoard)
         if button == 3:
-            if printedBoard[playerY][playerX] == ".":
-                printedBoard[playerY][playerX] = "F"
-            elif printedBoard[playerY][playerX] == "F":
-                printedBoard[playerY][playerX] = "."
-        Graphics.update(printedBoard, 10)
-        if (printedBoard[playerY][playerX] == "F"):
+            if printedBoard[startingY][startingX] == ".":
+                printedBoard[startingY][startingX] = "F"  
+            elif printedBoard[startingY][startingX] == "F":
+                printedBoard[startingY][startingX] = "."
+        if (printedBoard[startingY][startingX] == "F"):
             button = 3
-    if not update_printedBoard(playerY, playerX):
-        Graphics.lost(board)
-        print("You lost!")
-        ended = True
-    if blankSpots == 0:
-        Graphics.won(board)
-        print("You won!")
-        ended = True
-Graphics.update(printedBoard, 10)
-while True:
+        Graphics.update(printedBoard, 10)
+    for row in range(0, len(printedBoard), 1):
+        for column in range(0, len(printedBoard[row]), 1):
+            printedBoard[row][column] = "."
+    place_mines(startingY, startingX)
+    update_printedBoard(startingY, startingX)
+    ended = False
+    while not ended:
+        Graphics.update(printedBoard, 10)
+        button = 3
+        while button != 1:
+            playerX, playerY, button = Graphics.user_input(printedBoard)
+            if button == 3:
+                if printedBoard[playerY][playerX] == ".":
+                    printedBoard[playerY][playerX] = "F"
+                elif printedBoard[playerY][playerX] == "F":
+                    printedBoard[playerY][playerX] = "."
+            Graphics.update(printedBoard, 10)
+            if (printedBoard[playerY][playerX] == "F"):
+                button = 3
+        if not update_printedBoard(playerY, playerX):
+            Graphics.lost(board, printedBoard)
+            ended = True
+        if blankSpots == 0:
+            Graphics.won(board, printedBoard)
+            ended = True
     Graphics.await_click()
